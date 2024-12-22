@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Resistance</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>La Resistencia</h1>
+    <div id="setup">
+        <label for="numPlayers">Número de jugadores (5-10):</label>
+        <input type="number" id="numPlayers" min="5" max="10">
+        <button onclick="getPlayers()">Confirmar</button>
+    </div>
+
+    <div id="playerNames" class="hidden">
+        <h2>Introduce los nombres</h2>
+        <form id="namesForm"></form>
+        <button onclick="startGame()">EMPEZAR JUEGO</button>
+    </div>
+
+    <div id="game" class="hidden">
+        <h2>Revelación de roles</h2>
+        <p id="instruction">Que el primer jugador tome el móvil</p>
+        <button onclick="showRole()">MOSTRAR</button>
+        <p id="roleDisplay" class="hidden"></p>
+        <button id="nextButton" class="hidden" onclick="nextPlayer()">SIGUIENTE</button>
+    </div>
+
+    <script>
+        let players = [];
+        let spies = [];
+        let currentPlayer = 0;
+
+        function getPlayers() {
+            const numPlayers = parseInt(document.getElementById('numPlayers').value);
+            if (numPlayers >= 5 && numPlayers <= 10) {
+                const form = document.getElementById('namesForm');
+                form.innerHTML = '';
+                for (let i = 0; i < numPlayers; i++) {
+                    form.innerHTML += `<label>Jugador ${i + 1}: </label><input type="text" id="player${i}" required><br>`;
+                }
+                document.getElementById('setup').classList.add('hidden');
+                document.getElementById('playerNames').classList.remove('hidden');
+            } else {
+                alert('Número de jugadores inválido. Deben ser entre 5 y 10.');
+            }
+        }
+
+        function startGame() {
+            const numPlayers = parseInt(document.getElementById('numPlayers').value);
+            players = Array.from({ length: numPlayers }, (_, i) => document.getElementById(`player${i}`).value);
+            const numSpies = numPlayers <= 6 ? 2 : numPlayers <= 9 ? 3 : 4;
+            spies = [];
+            while (spies.length < numSpies) {
+                const spyIndex = Math.floor(Math.random() * numPlayers);
+                if (!spies.includes(players[spyIndex])) {
+                    spies.push(players[spyIndex]);
+                }
+            }
+            document.getElementById('playerNames').classList.add('hidden');
+            document.getElementById('game').classList.remove('hidden');
+        }
+
+        function showRole() {
+            const roleDisplay = document.getElementById('roleDisplay');
+            const nextButton = document.getElementById('nextButton');
+            const player = players[currentPlayer];
+            if (spies.includes(player)) {
+                roleDisplay.innerHTML = `Eres un <strong>ESPÍA</strong>. Espías: ${spies.join(', ')}`;
+            } else {
+                roleDisplay.innerHTML = `Eres <strong>BUENO</strong>.`;
+            }
+            roleDisplay.classList.remove('hidden');
+            nextButton.classList.remove('hidden');
+        }
+
+        function nextPlayer() {
+            currentPlayer++;
+            if (currentPlayer >= players.length) {
+                alert('Todos los roles han sido revelados. ¡Comienza el juego!');
+                location.reload();
+            } else {
+                document.getElementById('roleDisplay').classList.add('hidden');
+                document.getElementById('nextButton').classList.add('hidden');
+                document.getElementById('instruction').innerHTML = `Que ${players[currentPlayer]} tome el móvil`;
+            }
+        }
+    </script>
+</body>
+</html>
