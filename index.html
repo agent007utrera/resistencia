@@ -81,9 +81,9 @@
 
         function nextPlayer() {
             currentPlayer++;
-            if (currentPlayer >= players.length) {
-                alert('Todos los roles han sido revelados. ¡Comienza el juego!');
-                location.reload();
+ if (currentPlayer >= players.length) {
+        alert('Todos los roles han sido revelados. ¡Comienza el juego!');
+        window.location.href = "mision.html"; // Redirige a mision.html
             } else {
                 document.getElementById('roleDisplay').classList.add('hidden');
                 document.getElementById('nextButton').classList.add('hidden');
