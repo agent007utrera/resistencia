@@ -49,6 +49,15 @@ button.on{background:#0a3a4a;border-color:#00f0ff}
 .aforo-aviso{display:flex;justify-content:space-between;align-items:center;margin:0;padding:6px 4px;border-top:1px solid #1a3a5c;background:#050b14;color:#5a7d9b;font-size:.7rem}
 .aforo-aviso button{margin:0;padding:2px 8px}
 .aforo-aviso button.off{background:#2a0a0a;border-color:#ff3355;color:#ff3355}
+.reglas-link{position:absolute;right:14px;bottom:10px;z-index:2;margin:0;padding:6px 16px;background:rgba(61,64,34,.92);color:#ece6c4;border:2px solid #23260f;border-radius:2px;font-family:'Black Ops One',monospace;letter-spacing:3px;font-size:.9rem;box-shadow:0 3px 0 #23260f;cursor:pointer}
+.reglas-link:hover:not(:disabled){background:#5d663b;box-shadow:0 3px 0 #23260f}
+.reglas-modal{display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.85);flex-direction:column;padding:14px;box-sizing:border-box}
+.reglas-box{flex:1;display:flex;flex-direction:column;min-height:0;background:#d9cfa7;border:4px double #3d4022;box-shadow:0 0 0 6px #3d4022,0 14px 40px rgba(0,0,0,.85)}
+.reglas-h{display:flex;justify-content:space-between;align-items:center;background:#3d4022;color:#e9e2bd;font-family:'Black Ops One',monospace;letter-spacing:4px;padding:8px 14px}
+.reglas-h a{color:#ece6c4;font-family:'Special Elite',monospace;font-size:.8rem;letter-spacing:2px;margin-right:14px}
+.reglas-h button{margin:0;padding:4px 14px;background:#4b5230;color:#ece6c4;border:2px solid #23260f;border-radius:2px;font-family:'Black Ops One',monospace;letter-spacing:3px;box-shadow:0 3px 0 #23260f}
+.reglas-h button:hover:not(:disabled){background:#5d663b;box-shadow:0 3px 0 #23260f}
+.reglas-box iframe{flex:1;width:100%;border:0;background:#fff}
 </style>
 </head>
 <body>
@@ -57,6 +66,7 @@ button.on{background:#0a3a4a;border-color:#00f0ff}
     <video id="bg-video" autoplay muted loop playsinline src="images/fondo.mp4"></video>
     <div class="copy">AGENT007-UTRERA</div>
     <div class="vol">🔊<input type="range" min="0" max="100" value="50" oninput="setVol(this.value/100)"></div>
+    <button class="reglas-link" onclick="abrirReglas()">📜 REGLAS</button>
     <div id="panel"></div>
   </div>
   <aside class="video-sidebar">
@@ -67,6 +77,12 @@ button.on{background:#0a3a4a;border-color:#00f0ff}
 </div>
 
 <div id="modal" class="modal"><div class="tele"><div class="tele-h" id="mt"></div><div class="tele-b" id="mb"></div><button id="mok">ENTENDIDO</button></div></div>
+<div id="reglas" class="reglas-modal"><div class="reglas-box">
+  <div class="reglas-h"><span>REGLAS DE LA RESISTENCIA</span>
+    <span><a href="images/resistencia_reglas.pdf" target="_blank" rel="noopener">ABRIR EN PESTAÑA</a><button onclick="cerrarReglas()">✖ CERRAR</button></span>
+  </div>
+  <iframe id="reglasPdf" title="Reglas"></iframe>
+</div></div>
 <script src="webcams.js"></script>
 <script>
 const $=s=>document.querySelector(s);
@@ -303,6 +319,9 @@ function render(){
     Cam.label(k,p.id==myId?p.name+' (tú)':p.name);
     Cam.tag(k,(S.phase!='lobby'&&i==S.leader?'👑':'')+((S.voted||[]).includes(p.id)?'✔':''))});
 }
+function abrirReglas(){const f=$('#reglasPdf');if(!f.src.endsWith('resistencia_reglas.pdf'))f.src='images/resistencia_reglas.pdf';$('#reglas').style.display='flex'}
+function cerrarReglas(){$('#reglas').style.display='none'}
+document.addEventListener('keydown',e=>{if(e.key=='Escape')cerrarReglas()});
 home();
 </script>
 </body>
