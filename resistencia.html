@@ -226,7 +226,7 @@ const MISIONES=[
  ok:'El contacto entrega la información. La Resistencia gana un aliado clave.',
  ko:'La cita es una emboscada. El contacto cae. Alguien os ha traicionado.'},
 {t:'OPERACIÓN BÚNKER',l:'Búnker en el bosque · 1944',
- d:'Tenéis que inflirtarse en un búnker fortificado y robar los planos de las defensas costeras. La seguridad es alta y el tiempo apremia.',
+ d:'Tenéis que infiltraros en un búnker fortificado y robar los planos de las defensas costeras. La seguridad es alta y el tiempo apremia.',
  ok:'Conseguís los planos. El mando aliado conoce cada nido de ametralladoras.',
  ko:'Salta la alarma. Los planos no llegan y el búnker se refuerza.'},
 {t:'OPERACIÓN CIENTÍFICO',l:'Prisión nazi · primavera de 1944',
@@ -297,7 +297,7 @@ function render(){
   if(S.phase=='lobby'){amb.pause();amb.currentTime=0}else if(amb.paused)amb.play().catch(()=>{});
   $('#panel').innerHTML=h;
   const bgv=document.getElementById('bg-video');
-  const nsrc=(S.phase=='mission'||S.phase=='result')?`images/mission${S.round+1}.mp4`:'images/fondo.mp4';
+  const nsrc=S.phase=='end'?(S.winner=='res'?'images/victory_f.mp4':'images/victory_g.mp4'):(S.phase=='mission'||S.phase=='result')?`images/mission${S.round+1}.mp4`:'images/fondo.mp4';
   if(!bgv.src.endsWith(nsrc)){bgv.src=nsrc}
   P.forEach((p,i)=>{const k=p.id==myId?'yo':p.id;
     Cam.label(k,p.id==myId?p.name+' (tú)':p.name);
