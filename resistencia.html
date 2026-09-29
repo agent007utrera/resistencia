@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Resistencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Black+Ops+One&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#0b0f19;color:#d0d8e8;font-family:'Share Tech Mono',monospace}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:8px;padding:8px;height:100%;box-sizing:border-box}
+@media(max-width:800px){.layout{grid-template-columns:1fr;grid-template-rows:1fr 170px}}
+.main{position:relative;border:2px solid #1a3a5c;border-radius:4px;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
+.main video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.main::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,0)}
+.vol{position:absolute;bottom:10px;left:14px;z-index:2;display:flex;align-items:center;gap:8px;background:rgba(5,11,20,.75);border:1px solid #1a3a5c;border-radius:4px;padding:4px 10px;color:#00f0ff}
+.vol input{margin:0;padding:0;width:110px;accent-color:#00f0ff;cursor:pointer}
+.modal{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.68);align-items:center;justify-content:center}
+.tele{position:relative;width:min(90%,440px);background:repeating-linear-gradient(0deg,rgba(0,0,0,.035) 0 2px,transparent 2px 4px),#d9cfa7;color:#2b2a1c;border:4px double #3d4022;box-shadow:0 0 0 6px #3d4022,0 14px 40px rgba(0,0,0,.85);padding-bottom:18px;font-family:'Special Elite','Courier New',monospace;text-align:center;transform:rotate(-1deg)}
+.tele-h{background:#3d4022;color:#e9e2bd;font-family:'Black Ops One',monospace;letter-spacing:4px;padding:10px;font-size:1.05rem}
+.tele-b{padding:22px 24px 16px;font-size:1rem;line-height:1.5}
+.tele::after{content:"SECRETO";position:absolute;right:12px;bottom:8px;transform:rotate(-10deg);border:2px solid rgba(160,30,30,.7);color:rgba(160,30,30,.7);font-family:'Black Ops One',monospace;padding:0 6px;font-size:.75rem;letter-spacing:3px;pointer-events:none}
+.tele button{background:#4b5230;color:#ece6c4;border:2px solid #23260f;border-radius:2px;font-family:'Black Ops One',monospace;letter-spacing:3px;padding:8px 22px;margin:6px 0 10px;box-shadow:0 3px 0 #23260f}
+.tele button:hover:not(:disabled){background:#5d663b;box-shadow:0 3px 0 #23260f}
+.brief{border-left:3px solid #ece6c4;background:rgba(236,230,196,.07);padding:6px 12px;margin:8px 0;text-align:left;font-size:.85rem;color:#ece6c4}.brief p{margin:6px 0 2px}
+.copy{position:absolute;top:10px;left:14px;z-index:2;font-family:'Black Ops One',monospace;font-size:1.05rem;letter-spacing:3px;color:#ece6c4;text-shadow:0 0 3px #000,0 0 8px #000,0 0 12px #000;pointer-events:none}
+#panel{position:relative;z-index:1;width:min(94%,640px);max-height:94%;overflow-y:auto;background:rgba(5,11,20,.84);border:1px solid #1a3a5c;border-radius:6px;padding:18px;text-align:center;box-shadow:0 0 25px rgba(0,150,255,.2)}
+h1,h2{color:#00f0ff;letter-spacing:3px;margin:.2em 0}
+button,input,select{font:inherit;background:#08111e;color:#00f0ff;border:1px solid #1a3a5c;border-radius:4px;padding:9px 14px;margin:5px;cursor:pointer}
+input,select{cursor:text;text-transform:none}
+button:hover:not(:disabled){background:#0d2238;box-shadow:0 0 10px rgba(0,240,255,.4)}
+button:disabled{opacity:.35;cursor:default}
+button.no{color:#ff3355;border-color:#ff3355}
+button.on{background:#0a3a4a;border-color:#00f0ff}
+.dim{color:#5a7d9b;font-size:.8rem}
+.score{display:flex;justify-content:center;gap:8px;margin:8px 0}
+.dot{width:34px;height:34px;border-radius:50%;border:2px solid #1a3a5c;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.dot.s{background:#0a4a7a;border-color:#4da6ff}.dot.f{background:#6a0f1f;border-color:#ff3355}.dot.cur{border-color:#00f0ff;box-shadow:0 0 8px #00f0ff}
+.role{padding:8px;border:1px dashed #5a7d9b;margin:8px 0;cursor:pointer}
+.role.spy{border-color:#ff3355;color:#ff6680}.role.res{border-color:#4da6ff;color:#4da6ff}
+.vote{display:inline-block;margin:3px 6px}
+.ok{color:#4da6ff}.ko{color:#ff3355}
+.video-sidebar{background:rgba(3,6,10,.95);border:1px solid #1a3a5c;border-radius:4px;display:flex;flex-direction:column;overflow:hidden}
+.video-header{padding:10px;background:#08111e;border-bottom:1px solid #1a3a5c;color:#00f0ff;font-size:.8rem;text-align:center;letter-spacing:1px}
+#video-grid{flex:1;overflow-y:auto;padding:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;align-content:start}
+.video-card{position:relative;aspect-ratio:4/3;background:#000;border:1px solid #1a3a5c;border-radius:4px;overflow:hidden}
+.video-card video{width:100%;height:100%;object-fit:cover;display:block}
+.video-name{position:absolute;left:5px;bottom:5px;max-width:calc(100% - 10px);padding:2px 6px;background:rgba(5,11,20,.85);color:#00f0ff;font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid rgba(0,240,255,.3)}
+.video-tag{position:absolute;top:4px;left:6px;font-size:.9rem;z-index:2;text-shadow:0 0 4px #000}
+.aforo-aviso{display:flex;justify-content:space-between;align-items:center;margin:0;padding:6px 4px;border-top:1px solid #1a3a5c;background:#050b14;color:#5a7d9b;font-size:.7rem}
+.aforo-aviso button{margin:0;padding:2px 8px}
+.aforo-aviso button.off{background:#2a0a0a;border-color:#ff3355;color:#ff3355}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="main">
+    <video id="bg-video" autoplay muted loop playsinline src="images/fondo.mp4"></video>
+    <div class="copy">AGENT007-UTRERA</div>
+    <div class="vol">🔊<input type="range" min="0" max="100" value="50" oninput="setVol(this.value/100)"></div>
+    <div id="panel"></div>
+  </div>
+  <aside class="video-sidebar">
+    <div class="video-header">LA RESISTANCE · CÁMARAS</div>
+    <div id="video-grid"></div>
+    <p class="aforo-aviso"><button onclick="Cam.mic(this)">🎤</button>TRANSMISIÓN<button onclick="Cam.cam(this)">📷</button></p>
+  </aside>
+</div>
+
+<div id="modal" class="modal"><div class="tele"><div class="tele-h" id="mt"></div><div class="tele-b" id="mb"></div><button id="mok">ENTENDIDO</button></div></div>
+<script src="webcams.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SIZES={5:[2,3,2,3,3],6:[2,3,4,3,4],7:[2,3,3,4,4],8:[3,4,4,5,5],9:[3,4,4,5,5],10:[3,4,4,5,5]};
+const SPIES={5:2,6:2,7:3,8:3,9:3,10:4};
+let VOL=.5;
+function aviso(t,m,cb){$('#mt').textContent=t;$('#mb').innerHTML=m;const M=$('#modal');M.style.display='flex';$('#mok').onclick=()=>{M.style.display='none';if(cb)cb()}}
+const snd=n=>{const a=new Audio('audio/'+n+'.mp3');a.play().catch(()=>{})};
+const amb=new Audio('audio/ambiente.mp3');amb.loop=true;amb.volume=VOL;
+const setVol=v=>{VOL=v;amb.volume=v};
+document.addEventListener('click',e=>{if(e.target.closest('button'))snd('click')});
+let lastSnd='';
+let peer,myId,conn,host=false,st=null,mine={},H=null,conns={},sel=[],lastKey='',modo='',roleHidden=false;
+
+/* ---------- pantallas previas ---------- */
+function home(){$('#panel').innerHTML=`<h1>LA RESISTENCIA</h1><p class="dim">Juego de deducción social · 5-10 jugadores</p>
+<button onclick="pantallaForm('crear')">CREAR SALA</button><button onclick="pantallaForm('unir')">UNIRSE A SALA</button>`}
+function pantallaForm(m){modo=m;$('#panel').innerHTML=`<h2>${m=='crear'?'NUEVA SALA':'UNIRSE'}</h2>
+<input id="nom" maxlength="14" placeholder="Tu nombre"><br>
+${m=='crear'?`<select id="max">${[5,6,7,8,9,10].map(n=>`<option ${n==5?'selected':''}>${n}</option>`).join('')}</select> jugadores máx.`:`<input id="cod" maxlength="4" placeholder="CÓDIGO" style="text-transform:uppercase">`}
+<p class="dim">Al entrar el navegador pedirá permiso de cámara y micrófono.</p>
+<button onclick="home()">ATRÁS</button><button onclick="entrar()">ENTRAR</button>`}
+const paso=t=>{$('#panel').innerHTML=`<p>${t}</p>`};
+const fallo=m=>{$('#panel').innerHTML='<p class="dim">Conexión interrumpida…</p>';aviso('ERROR DE TRANSMISIÓN',m,()=>location.reload())};
+const cargar=u=>new Promise((ok,ko)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
+async function asegurarPeer(){
+  for(const u of ['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js','https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js','https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js']){
+    if(window.Peer)return true;
+    try{await cargar(u)}catch(e){}
+  }
+  return !!window.Peer;
+}
+async function entrar(){
+  const nombre=$('#nom').value.trim(); if(!nombre)return aviso('DATOS INCOMPLETOS','Escribe tu nombre, agente.');
+  const cod=modo=='unir'?$('#cod').value.trim().toUpperCase():Math.random().toString(36).slice(2,6).toUpperCase();
+  if(modo=='unir'&&cod.length!=4)return aviso('CÓDIGO INCORRECTO','El código de sala tiene 4 caracteres.');
+  const max=modo=='crear'?+$('#max').value:0;
+  try{
+    paso('1/3 Cargando conexión…');
+    if(!await asegurarPeer())return fallo('No se pudo cargar PeerJS. Desactiva el bloqueo de rastreo o los bloqueadores para esta web y recarga.');
+    paso('2/3 Pidiendo cámara y micrófono… (acepta el aviso del navegador)');
+    if(!await Cam.start())aviso('SIN IMAGEN','No hay acceso a cámara o micrófono. Podrás jugar, pero no se te verá.');
+    paso('3/3 Conectando con el servidor…');
+    if(modo=='crear')crear(cod,nombre,max);else unirse(cod,nombre);
+    setTimeout(()=>{if(!myId)fallo('El servidor de PeerJS no responde. Recarga e inténtalo de nuevo, o prueba otra red.')},15000);
+  }catch(e){fallo('Error: '+esc(e.message||e))}
+}
+
+/* ---------- red ---------- */
+function crear(code,nombre,max){
+  host=true;peer=new Peer('resist-'+code);
+  peer.on('error',e=>fallo('Error de red: '+esc(e.type)));
+  peer.on('open',id=>{myId=id;Cam.attach(peer);
+    st={code,max,phase:'lobby',players:[{id,name:nombre}],round:0,leader:0,team:[],rejects:0,scores:[],voted:[],votes:null};
+    H={roles:{},votes:{},cards:{}};push()});
+  peer.on('connection',c=>{conns[c.peer]=c;
+    c.on('data',m=>{
+      if(m.t=='join'){
+        const nm=String(m.name||'').slice(0,14),ex=st.players.find(p=>p.name.toLowerCase()==nm.toLowerCase());
+        if(st.phase!='lobby'){
+          if(!ex||ex.id==myId)return c.send({err:'Partida en curso. Para volver a entrar usa exactamente el mismo nombre que tenías.'});
+          renombrar(ex.id,c.peer);push();return;
+        }
+        if(st.players.length>=st.max)return c.send({err:'Sala llena'});
+        let n=nm,k=2;while(st.players.some(p=>p.name.toLowerCase()==n.toLowerCase()))n=nm+k++;
+        st.players.push({id:c.peer,name:n});push();
+      }else act(c.peer,m)});
+    c.on('close',()=>{
+      if(conns[c.peer]===c)delete conns[c.peer];
+      const p=st.players.find(x=>x.id==c.peer);if(!p)return;
+      if(st.phase=='lobby')st.players=st.players.filter(x=>x!==p);else p.off=true;
+      push();
+    });
+  });
+}
+function renombrar(o,n){
+  try{conns[o]&&conns[o].close()}catch(e){}
+  delete conns[o];
+  const p=st.players.find(x=>x.id==o);p.id=n;p.off=false;
+  [H.roles,H.votes,H.cards,st.votes].forEach(ob=>{if(ob&&o in ob){ob[n]=ob[o];delete ob[o]}});
+  st.team=st.team.map(x=>x==o?n:x);
+}
+function unirse(code,nombre){
+  peer=new Peer();
+  peer.on('error',e=>fallo(e.type=='peer-unavailable'?'Sala no encontrada. Revisa el código.':'Error de red: '+esc(e.type)));
+  peer.on('open',id=>{myId=id;Cam.attach(peer);
+    conn=peer.connect('resist-'+code,{reliable:true});
+    conn.on('open',()=>conn.send({t:'join',name:nombre}));
+    setTimeout(()=>{if(!st)fallo('La sala no responde. Comprueba el código.')},15000);
+    conn.on('data',d=>{if(d.err)return fallo(esc(d.err));st=d.S;mine=d.me;render()});
+    conn.on('close',()=>aviso('TRANSMISIÓN CORTADA','El anfitrión se ha desconectado.',()=>location.reload()));
+  });
+}
+function send(m){host?act(myId,m):conn.send(m)}
+
+/* ---------- lógica (solo anfitrión) ---------- */
+const N=()=>st.players.length, size=()=>SIZES[N()][st.round];
+const nextLeader=()=>{st.leader=(st.leader+1)%N();st.team=[];st.phase='team'};
+function pub(){const S={...st};S.votes=st.phase=='reveal'?st.votes:null;
+  S.voted=st.phase=='vote'?Object.keys(H.votes):st.phase=='mission'?Object.keys(H.cards):[];
+  if(!(st.phase=='end'&&st.showRoles))delete S.roles;return S}
+function priv(id){const r=H.roles[id];return{role:r,spies:r=='spy'?st.players.filter(p=>H.roles[p.id]=='spy'&&p.id!=id).map(p=>p.name):[]}}
+function push(){
+  const S=pub();
+  st.players.forEach(p=>{if(p.id!=myId&&conns[p.id]&&conns[p.id].open)conns[p.id].send({S,me:priv(p.id)})});
+  render();
+}
+function fin(w,why){st.phase='end';st.showRoles=false;st.winner=w;st.why=why;st.roles=H.roles}
+function act(id,m){
+  if(!st.players.some(p=>p.id==id))return;
+  if(m.t=='start'&&id==myId&&st.phase=='lobby'&&N()>=5){
+    const ids=st.players.map(p=>p.id).sort(()=>Math.random()-.5);
+    ids.forEach((x,i)=>H.roles[x]=i<SPIES[N()]?'spy':'res');
+    st.round=0;st.scores=[];st.rejects=0;st.leader=Math.floor(Math.random()*N());st.team=[];st.phase='team';
+  }
+  else if(m.t=='team'&&st.phase=='team'&&id==st.players[st.leader].id&&new Set(m.team).size==size()&&m.team.every(x=>st.players.some(p=>p.id==x))){
+    st.team=m.team;st.phase='vote';H.votes={};
+  }
+  else if(m.t=='vote'&&st.phase=='vote'&&H.votes[id]===undefined){
+    H.votes[id]=!!m.v;
+    if(Object.keys(H.votes).length==N()){st.votes={...H.votes};st.phase='reveal'}
+  }
+  else if(m.t=='card'&&st.phase=='mission'&&st.team.includes(id)&&H.cards[id]===undefined){
+    if(m.c=='f'&&H.roles[id]!='spy')return;
+    H.cards[id]=m.c;
+    if(Object.keys(H.cards).length==st.team.length){
+      const f=Object.values(H.cards).filter(c=>c=='f').length,need=(st.round==3&&N()>=7)?2:1;
+      st.scores.push(f<need?'s':'f');st.fails=f;st.phase='result';
+    }
+  }
+  else if(m.t=='next'&&id==myId&&st.phase=='reveal'){despuesVoto();return}
+  else if(m.t=='next'&&id==myId&&st.phase=='result'){despuesMision();return}
+  else if(m.t=='next'&&id==myId&&st.phase=='end'&&!st.showRoles){st.showRoles=true}
+  else if(m.t=='again'&&id==myId&&st.phase=='end'){st.phase='lobby';st.roles=null;st.showRoles=false;st.scores=[];H.roles={}}
+  push();
+}
+function despuesVoto(){
+  const si=Object.values(H.votes).filter(v=>v).length;
+  if(si*2>N()){st.phase='mission';H.cards={}}
+  else{st.rejects++;if(st.rejects>=5)fin('spy','5 equipos rechazados seguidos');else nextLeader()}
+  push();
+}
+function despuesMision(){
+  const s=st.scores.filter(x=>x=='s').length,f=st.scores.length-s;
+  if(s>=3)fin('res','3 misiones con éxito');else if(f>=3)fin('spy','3 misiones fracasadas');
+  else{st.round++;st.rejects=0;nextLeader()}
+  push();
+}
+
+/* ---------- interfaz de partida ---------- */
+const empezar=()=>send({t:'start'});
+function tog(id){const i=sel.indexOf(id);i<0?sel.push(id):sel.splice(i,1);render()}
+const MISIONES=[
+{t:'OPERACIÓN CAFÉ',l:'Cafetería de París · 1943',
+ d:'Debéis quedar con un contacto en una cafetería del centro de París. Conseguir documentos y contraseñas sin que la Gestapo lo sepa. El local está lleno de sospechosos.',
+ ok:'El contacto entrega la información. La Resistencia gana un aliado clave.',
+ ko:'La cita es una emboscada. El contacto cae. Alguien os ha traicionado.'},
+{t:'OPERACIÓN BÚNKER',l:'Búnker en el bosque · 1944',
+ d:'Tenéis que inflirtarse en un búnker fortificado y robar los planos de las defensas costeras. La seguridad es alta y el tiempo apremia.',
+ ok:'Conseguís los planos. El mando aliado conoce cada nido de ametralladoras.',
+ ko:'Salta la alarma. Los planos no llegan y el búnker se refuerza.'},
+{t:'OPERACIÓN CIENTÍFICO',l:'Prisión nazi · primavera de 1944',
+ d:'Un científico aliado que conoce secretos del enemigo está prisionero. Debéis rescatarlo de la prisión antes de que lo trasladen a Alemania.',
+ ok:'El científico es liberado y puesto a salvo. Sus conocimientos están del lado de la Resistencia.',
+ ko:'El rescate se tuerce. El científico permanece preso y podría hablar bajo tortura.'},
+{t:'OPERACIÓN PUENTE',l:'Puente estratégico · 1944',
+ d:'Un puente clave conecta una línea de suministros de las tropas alemanas. Hay que colocar explosivos y volarlo para cortar sus líneas de refuerzo.',
+ ok:'El puente se derrumba. Los convoyes enemigos se detienen y Alemania se debilita.',
+ ko:'Os descubren. El puente sigue en pie y los refuerzos llegan.'},
+{t:'OPERACIÓN OFICIAL',l:'Cuartel general alemán · junio de 1944',
+ d:'Un alto oficial de la Wehrmacht coordina la defensa. Debe ser eliminado antes de que organice una respuesta efectiva al desembarco.',
+ ok:'El oficial cae. El mando alemán queda desorganizado en un momento crítico.',
+ ko:'El atentado falla. El oficial escapa y se endurece la seguridad de toda la zona.'}];
+function brief(S,P){
+  if(S.phase=='end')return '';
+  const M=MISIONES[S.round];
+  let t=S.phase=='result'?(S.scores[S.round]=='s'?M.ok:M.ko):M.d;
+  if(S.round==3&&P.length>=7&&S.phase!='result')t+='<br><span class="ko">⚠ Con 7 o más jugadores hacen falta 2 cartas de fracaso para que esta misión fracase.</span>';
+  return `<div class="brief"><b>${M.t}</b><br><span class="dim">${M.l}</span><p>${t}</p></div>`;
+}
+function render(){
+  const S=host?pub():st,P=S.players;if(host)mine=priv(myId);const nm=id=>esc((P.find(p=>p.id==id)||{}).name||'?');
+  P.forEach(p=>{if(p.id!=myId)Cam.names[p.id]=p.name});
+  // llamar a los jugadores anteriores en la lista (los nuevos llaman a los antiguos)
+  P.forEach(p=>{if(p.id!=myId&&!p.off&&myId<p.id)Cam.call(p.id)});
+  let h='';
+  if(S.phase=='lobby'){
+    h=`<h2>SALA ${S.code}</h2><p class="dim">Comparte este código · ${P.length}/${S.max} jugadores</p>
+    <div>${P.map(p=>`<div>${esc(p.name)}${p.id==P[0].id?' 👑':''}</div>`).join('')}</div>`+
+    (host?(P.length>=5?'<button onclick="empezar()">EMPEZAR PARTIDA</button>':'<p class="dim">Hacen falta al menos 5 jugadores</p>'):'<p class="dim">Esperando al anfitrión…</p>');
+  }else{
+    const key=S.round+'-'+S.leader+'-'+S.phase+'-'+S.rejects;if(key!=lastKey){lastKey=key;if(S.phase=='team')sel=[]}
+    const L=P[S.leader],soyL=L.id==myId,sz=SIZES[P.length][S.round];
+    h=(P.some(p=>p.off)?`<p class="ko">⚠ Desconectado: ${P.filter(p=>p.off).map(p=>esc(p.name)).join(', ')}. La partida espera: deben entrar con el código ${S.code} y el mismo nombre.</p>`:'')+`<div class="score">${[0,1,2,3,4].map(i=>`<div class="dot ${S.scores[i]||''} ${i==S.round&&S.phase!='end'?'cur':''}">${SIZES[P.length][i]}${S.scores[i]=='s'?'✔':S.scores[i]=='f'?'✖':''}</div>`).join('')}</div>
+    <p class="dim">Misión ${S.round+1} · Equipo de ${sz} · Rechazos ${S.rejects}/5 · Líder: ${nm(L.id)}</p>${brief(S,P)}
+    <div class="role ${mine.role}" onclick="roleHidden=!roleHidden;render()">${roleHidden?'[ toca para ver tu rol ]':mine.role=='spy'?'ERES ESPÍA'+(mine.spies.length?' · compañeros: '+mine.spies.map(esc).join(', '):''):'ERES DE LA RESISTENCIA'}</div>`;
+    const inTeam=S.team.includes(myId),voted=S.voted.includes(myId);
+    if(S.phase=='team'){
+      h+=soyL?`<p>Elige ${sz} jugadores:</p>`+P.map(p=>`<button class="${sel.includes(p.id)?'on':''}" onclick="tog('${p.id}')">${esc(p.name)}</button>`).join('')+
+        `<br><button ${sel.length==sz?'':'disabled'} onclick="send({t:'team',team:sel})">PROPONER EQUIPO</button>`
+        :`<p>${nm(L.id)} está eligiendo el equipo…</p>`;
+    }else if(S.phase=='vote'){
+      h+=`<p>Equipo propuesto: <b>${S.team.map(nm).join(', ')}</b></p>`+(voted?'<p class="dim">Voto enviado. Esperando al resto…</p>':
+        `<button onclick="send({t:'vote',v:true})">✔ APROBAR</button><button class="no" onclick="send({t:'vote',v:false})">✖ RECHAZAR</button>`);
+    }else if(S.phase=='reveal'){
+      const si=P.filter(p=>S.votes[p.id]).length,ok=si*2>P.length;
+      h+=P.map(p=>`<span class="vote ${S.votes[p.id]?'ok':'ko'}">${esc(p.name)} ${S.votes[p.id]?'✔':'✖'}</span>`).join('')+
+        `<h2 class="${ok?'ok':'ko'}">${ok?'EQUIPO APROBADO':'EQUIPO RECHAZADO'} (${si}-${P.length-si})</h2>`+(host?`<button onclick="send({t:'next'})">CONTINUAR</button>`:'<p class="dim">Esperando al anfitrión…</p>');
+    }else if(S.phase=='mission'){
+      h+=`<p>Misión en marcha: <b>${S.team.map(nm).join(', ')}</b></p>`+(inTeam&&!voted?
+        `<p>Juega tu carta en secreto:</p><button onclick="send({t:'card',c:'s'})">ÉXITO</button><button class="no" ${mine.role=='spy'?'':'disabled'} onclick="send({t:'card',c:'f'})">FRACASO</button>`:
+        `<p class="dim">${inTeam?'Carta jugada.':''} Esperando al equipo…</p>`);
+    }else if(S.phase=='result'){
+      const ok=S.scores[S.round]=='s';
+      h+=`<h2 class="${ok?'ok':'ko'}">MISIÓN ${ok?'EXITOSA':'FALLIDA'}</h2><p>Cartas de fracaso: ${S.fails}</p><p>Equipo que ha ido a la misión:<br><b>${S.team.map(nm).join(', ')}</b></p>`+(host?`<button onclick="send({t:'next'})">CONTINUAR</button>`:'<p class="dim">Esperando al anfitrión…</p>');
+    }else if(S.phase=='end'){
+      h+=`<h2 class="${S.winner=='res'?'ok':'ko'}">${S.winner=='res'?'¡GANA LA RESISTENCIA!':'¡GANAN LOS ESPÍAS!'}</h2><p class="dim">${S.why}</p>`+
+        (S.roles?P.map(p=>`<div class="${S.roles[p.id]=='spy'?'ko':'ok'}">${esc(p.name)}: ${S.roles[p.id]=='spy'?'ESPÍA':'RESISTENCIA'}</div>`).join('')+
+        (host?'<button onclick="send({t:\'again\'})">VOLVER A LA SALA</button>':'<p class="dim">El anfitrión puede reiniciar…</p>')
+        :(host?'<p class="dim">Debatid quién era quién…</p><button onclick="send({t:\'next\'})">CONTINUAR</button>':'<p class="dim">Debatid quién es quién. El anfitrión revelará los roles…</p>'));
+    }
+  }
+  const kS=S.phase+'|'+S.round+'|'+S.rejects+'|'+S.scores.length;
+  if(kS!=lastSnd){lastSnd=kS;
+    if(S.phase=='reveal'){const si=P.filter(p=>S.votes[p.id]).length;snd(si*2>P.length?'reload':'nope')}
+    else if(S.phase=='result')snd(S.scores[S.round]=='s'?'success':'failure')}
+  if(S.phase=='lobby'){amb.pause();amb.currentTime=0}else if(amb.paused)amb.play().catch(()=>{});
+  $('#panel').innerHTML=h;
+  const bgv=document.getElementById('bg-video');
+  const nsrc=(S.phase=='mission'||S.phase=='result')?`images/mission${S.round+1}.mp4`:'images/fondo.mp4';
+  if(!bgv.src.endsWith(nsrc)){bgv.src=nsrc}
+  P.forEach((p,i)=>{const k=p.id==myId?'yo':p.id;
+    Cam.label(k,p.id==myId?p.name+' (tú)':p.name);
+    Cam.tag(k,(S.phase!='lobby'&&i==S.leader?'👑':'')+((S.voted||[]).includes(p.id)?'✔':''))});
+}
+home();
+</script>
+</body>
+</html>
