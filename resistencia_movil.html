@@ -116,14 +116,17 @@ body {
   }
 }
 
+.version-btn {position:absolute; top:10px; right:14px; z-index:2; margin:0; padding:6px 12px; background:rgba(26,58,92,.9); color:#00f0ff; border:1px solid #1a3a5c; border-radius:2px; font-family:'Share Tech Mono',monospace; font-size:.85rem; cursor:pointer;}
+.version-btn:hover {background:#0d2238; box-shadow:0 0 10px rgba(0,240,255,.4);}
 </style>
 </head>
 <body>
 <div class="layout">
-  <div class="main">
+<div class="main">
     <video id="bg-video" autoplay muted loop playsinline src="images/fondo.mp4"></video>
     <div class="copy">AGENT007-UTRERA</div>
-    <div class="vol">🔊<input type="range" min="0" max="100" value="25" oninput="setVol(this.value/100)"></div>
+    <div class="vol">🔊<input type="range" min="0" max="100" value="20" oninput="setVol(this.value/100)"></div>
+    <button id="version-btn" class="version-btn" onclick="location.href='resistencia.html'">VERSIÓN WEB</button>
     <button class="reglas-link" onclick="abrirReglas()">📜 REGLAS</button>
     <div id="panel"></div>
   </div>
@@ -157,9 +160,9 @@ let lastSnd='';
 let peer,myId,conn,host=false,st=null,mine={},H=null,conns={},sel=[],lastKey='',modo='',roleHidden=false;
 
 /* ---------- pantallas previas ---------- */
-function home(){$('#panel').innerHTML=`<h1>LA RESISTENCIA</h1><p class="dim">Juego de deducción social · 5-10 jugadores</p>
+function home(){$('#version-btn').style.display='';$('#panel').innerHTML=`<h1>LA RESISTENCIA</h1><p class="dim">Juego de deducción social · 5-10 jugadores</p>
 <button onclick="pantallaForm('crear')">CREAR SALA</button><button onclick="pantallaForm('unir')">UNIRSE A SALA</button>`}
-function pantallaForm(m){modo=m;$('#panel').innerHTML=`<h2>${m=='crear'?'NUEVA SALA':'UNIRSE'}</h2>
+function pantallaForm(m){modo=m;$('#version-btn').style.display='none';$('#panel').innerHTML=`<h2>${m=='crear'?'NUEVA SALA':'UNIRSE'}</h2>
 <input id="nom" maxlength="14" placeholder="Tu nombre"><br>
 ${m=='crear'?`<select id="max">${[5,6,7,8,9,10].map(n=>`<option ${n==5?'selected':''}>${n}</option>`).join('')}</select> jugadores máx.`:`<input id="cod" maxlength="4" placeholder="CÓDIGO" style="text-transform:uppercase">`}
 <p class="dim">Al entrar el navegador pedirá permiso de cámara y micrófono.</p>
@@ -374,6 +377,7 @@ function render(){
     else if(S.phase=='result')snd(S.scores[S.round]=='s'?'success':'failure')}
   if(S.phase=='lobby'){amb.pause();amb.currentTime=0}else if(amb.paused)amb.play().catch(()=>{});
   $('#panel').innerHTML=h;
+  $('#version-btn').style.display='none';
   const bgv=document.getElementById('bg-video');
   const nsrc=S.phase=='end'?(S.winner=='res'?'images/victory_f.mp4':'images/victory_g.mp4'):(S.phase=='mission'||S.phase=='result')?`images/mission${S.round+1}.mp4`:'images/fondo.mp4';
   if(!bgv.src.endsWith(nsrc)){bgv.src=nsrc}
