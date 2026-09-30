@@ -58,6 +58,48 @@ button.on{background:#0a3a4a;border-color:#00f0ff}
 .reglas-h button{margin:0;padding:4px 14px;background:#4b5230;color:#ece6c4;border:2px solid #23260f;border-radius:2px;font-family:'Black Ops One',monospace;letter-spacing:3px;box-shadow:0 3px 0 #23260f}
 .reglas-h button:hover:not(:disabled){background:#5d663b;box-shadow:0 3px 0 #23260f}
 .reglas-box iframe{flex:1;width:100%;border:0;background:#fff}
+
+/* ===== VERSIÓN VERTICAL MÓVIL ===== */
+html, body {
+  min-height: 100%;
+}
+body {
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.main {
+  width: min(100vw, 560px);
+  min-height: auto;
+  height: auto;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+.game-area {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  flex: none;
+  order: 1;
+}
+.video-sidebar {
+  width: 100%;
+  height: auto;
+  flex: none;
+  order: 2;
+  display: flex;
+  flex-direction: column;
+}
+.video-sidebar > * {
+  width: 100%;
+}
+@media (min-width: 561px) {
+  .main {
+    width: min(100vw, 560px);
+  }
+}
+
 </style>
 </head>
 <body>
