@@ -68,35 +68,51 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
 }
-.main {
-  width: min(100vw, 560px);
-  min-height: auto;
+.layout {
+  display: block;
   height: auto;
-  margin: 0 auto;
+  min-height: 100vh;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.main {
+  width: min(100%, 560px);
+  min-height: 100vh;
+  height: auto;
+  margin: 0 auto 8px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-}
-.game-area {
-  width: 100%;
-  height: auto;
-  min-height: 0;
-  flex: none;
-  order: 1;
 }
 .video-sidebar {
-  width: 100%;
+  width: min(100%, 560px);
   height: auto;
+  min-height: 0;
+  margin: 0 auto;
   flex: none;
-  order: 2;
   display: flex;
   flex-direction: column;
+  overflow: visible;
+}
+#video-grid {
+  flex: none;
+  height: auto;
+  overflow: visible;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+.video-card {
+  min-width: 0;
 }
 .video-sidebar > * {
   width: 100%;
+  box-sizing: border-box;
 }
 @media (min-width: 561px) {
-  .main {
-    width: min(100vw, 560px);
+  .main, .video-sidebar {
+    width: min(100%, 560px);
   }
 }
 
