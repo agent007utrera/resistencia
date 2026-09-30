@@ -65,7 +65,7 @@ button.on{background:#0a3a4a;border-color:#00f0ff}
   <div class="main">
     <video id="bg-video" autoplay muted loop playsinline src="images/fondo.mp4"></video>
     <div class="copy">AGENT007-UTRERA</div>
-    <div class="vol">🔊<input type="range" min="0" max="100" value="50" oninput="setVol(this.value/100)"></div>
+    <div class="vol">🔊<input type="range" min="0" max="100" value="25" oninput="setVol(this.value/100)"></div>
     <button class="reglas-link" onclick="abrirReglas()">📜 REGLAS</button>
     <div id="panel"></div>
   </div>
@@ -237,23 +237,23 @@ function despuesMision(){
 const empezar=()=>send({t:'start'});
 function tog(id){const i=sel.indexOf(id);i<0?sel.push(id):sel.splice(i,1);render()}
 const MISIONES=[
-{t:'OPERACIÓN CAFÉ',l:'Cafetería de París · 1943',
+{t:'OPERACIÓN: CONTACTO EN PARÍS',l:'Cafetería de París · 1943',
  d:'Debéis quedar con un contacto en una cafetería del centro de París. Conseguir documentos y contraseñas sin que la Gestapo lo sepa. El local está lleno de sospechosos.',
  ok:'El contacto entrega la información. La Resistencia gana un aliado clave.',
  ko:'La cita es una emboscada. El contacto cae. Alguien os ha traicionado.'},
-{t:'OPERACIÓN BÚNKER',l:'Búnker en el bosque · 1944',
+{t:'OPERACIÓN: ROBAR LOS PLANOS',l:'Búnker en el bosque · 1944',
  d:'Tenéis que infiltraros en un búnker fortificado y robar los planos de las defensas costeras. La seguridad es alta y el tiempo apremia.',
  ok:'Conseguís los planos. El mando aliado conoce cada nido de ametralladoras.',
  ko:'Salta la alarma. Los planos no llegan y el búnker se refuerza.'},
-{t:'OPERACIÓN CIENTÍFICO',l:'Prisión nazi · primavera de 1944',
+{t:'OPERACIÓN: RESCATAR AL CIENTÍFICO',l:'Prisión nazi · primavera de 1944',
  d:'Un científico aliado que conoce secretos del enemigo está prisionero. Debéis rescatarlo de la prisión antes de que lo trasladen a Alemania.',
  ok:'El científico es liberado y puesto a salvo. Sus conocimientos están del lado de la Resistencia.',
  ko:'El rescate se tuerce. El científico permanece preso y podría hablar bajo tortura.'},
-{t:'OPERACIÓN PUENTE',l:'Puente estratégico · 1944',
+{t:'OPERACIÓN: VOLAR EL PUENTE',l:'Puente estratégico · 1944',
  d:'Un puente clave conecta una línea de suministros de las tropas alemanas. Hay que colocar explosivos y volarlo para cortar sus líneas de refuerzo.',
  ok:'El puente se derrumba. Los convoyes enemigos se detienen y Alemania se debilita.',
  ko:'Os descubren. El puente sigue en pie y los refuerzos llegan.'},
-{t:'OPERACIÓN OFICIAL',l:'Cuartel general alemán · junio de 1944',
+{t:'OPERACIÓN: ELIMINAR AL OFICIAL',l:'Cuartel general alemán · junio de 1944',
  d:'Un alto oficial de la Wehrmacht coordina la defensa. Debe ser eliminado antes de que organice una respuesta efectiva al desembarco.',
  ok:'El oficial cae. El mando alemán queda desorganizado en un momento crítico.',
  ko:'El atentado falla. El oficial escapa y se endurece la seguridad de toda la zona.'}];
@@ -261,7 +261,7 @@ function brief(S,P){
   if(S.phase=='end')return '';
   const M=MISIONES[S.round];
   let t=S.phase=='result'?(S.scores[S.round]=='s'?M.ok:M.ko):M.d;
-  if(S.round==3&&P.length>=7&&S.phase!='result')t+='<br><span class="ko">⚠ Con 7 o más jugadores hacen falta 2 cartas de fracaso para que esta misión fracase.</span>';
+  if(S.round==3&&P.length>=7&&S.phase!='result')t+='<br><span class="ko">⚠ En esta misión, con 7 o más jugadores, hacen falta 2 cartas de fracaso para que esta misión fracase.</span>';
   return `<div class="brief"><b>${M.t}</b><br><span class="dim">${M.l}</span><p>${t}</p></div>`;
 }
 function render(){
